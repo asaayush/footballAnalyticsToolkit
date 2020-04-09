@@ -1,0 +1,20 @@
+//Initializing git in a folder
+git init
+
+//Adding folders/files/ to
+git add "file"
+
+//Commiting the change
+git commit -m "message"
+
+//To identify where you are at
+git status
+
+//To unstage files
+git rm --cached <file>
+
+//To add it to GitHub
+****Use the ssh key
+git remote add origin "url"
+git remote -v
+git push origin master
