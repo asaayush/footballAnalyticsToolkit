@@ -1,0 +1,39 @@
+//To read data from CSV files
+pd.read_csv(filename)
+
+//To write to a CSV file **.df is a dataframe object
+df.to_csv
+
+//Viewing and Inspecting Data
+df.head(n) 		***View first n rows of the dataframe
+df.tail(n) 		***View last n rows of the dataframe
+df.shape   		***View number of rows and columns
+df.info()  		***View index, datatype and memory information
+df.describe() 		***View summary statistics for numerical columns
+s.value_counts(dropna=False)	*** View unique values and counts
+
+//Selecting data subsets
+df[col]			***Returns column with label col as a Series
+df[[col1, col2]]	***Returns columns as a new Dataframe
+s.iloc[0]		***Selection by Position
+s.iloc['index_one']	***Selection by index
+df.iloc[0,:]		***First Row
+df.iloc[0,0]		***First element of first column
+
+//Data Cleaning
+df.columns = ['a','b','c']	***Rename Columns
+pd.isnull()		***Checks for null values, returns boolean array
+pd.notnull()		***Opposite of pd.isnull()
+df.dropna()		***Drop all rows that contain null values
+df.dropna(axis=1)	***Drop all columns that contain null valules
+df.dropna(axis=1,thresh=n)	***Drop all rows that have less than n non-null values
+df.fillna(x)		***Replace all null values with x
+s.fillna(s.mean())	***Replace all null values with the mean (or anything from statistics module)
+s.astype(float)		***Convert the datatype of the series to float
+s.replace(1,'one')	***Replace all values equal to 1 with 'one'
+s.replace([1,3],['one','three'])	***Replace 1 with 'one' and 3 with 'three' everywhere.
+df.rename(columns=lambda x:x +1)	***Mass Renaming of Columns
+df.set_index('column_one')	***Change the index
+df.rename(index=lambda x:x + 1)		***Mass renaming of index
+
+
