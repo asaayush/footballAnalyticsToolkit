@@ -4,11 +4,13 @@
 import csv          # not needed
 import numpy        # not needed
 import pandas
+import re           # regular expressions
 
 # Invoke File
 countryData_file = 'CountryData.csv'
 leagueData_file = 'LeagueData.csv'
 matchData_file = 'MatchData.csv'
+extraData_file = 'MatchData4_ExtraData_NeedsCleaning.csv'
 
 # We could import using any of the following strategies:
 # 1. Using direct CSV readers
@@ -24,6 +26,8 @@ leagueData = pandas.read_csv(leagueData_file, names=tags)
 tags = ['id','country_id','league_id','season','stage','date','match_api_id','home_team_api_id',
         'away_team_api_id','home_team_goal','away_team_goal']
 matchData = pandas.read_csv(matchData_file, names=tags)
+tags = ['goal','shoton','shotoff','foulcommit','card','cross','corner','possession']
+extraData = pandas.read_csv(extraData_file, names=tags)
 
 # Important point to note: As it turns out, the first line of the csv is the tags.
 # I should remove it after writing sufficient code to handle it. UPDATE: I can do this!
@@ -32,10 +36,21 @@ matchData = pandas.read_csv(matchData_file, names=tags)
 countryData = countryData.iloc[1:,:]
 leagueData = leagueData.iloc[1:,:]
 matchData = matchData.iloc[1:,:]
+extraData = extraData.iloc[1:,:]
 
+# Just checking on the shape of the data
 print(countryData.shape)
 print(leagueData.shape)
 print(matchData.shape)
+print(extraData.shape)
+
+extraData = extraData.dropna()
+for row in extraData:
+    temp = extraData.iloc[0, :]
+    
+
+
+
 
 # let us try and getting data per league now
 matchData.sort_index()
