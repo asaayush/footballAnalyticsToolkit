@@ -1,8 +1,8 @@
 # The basic target here is to read databases from the .csv files and manipulate them.
 
 # Import statements
-import csv
-import numpy
+import csv          # not needed
+import numpy        # not needed
 import pandas
 
 # Invoke File
@@ -36,3 +36,17 @@ matchData = matchData.iloc[1:,:]
 print(countryData.shape)
 print(leagueData.shape)
 print(matchData.shape)
+
+# let us try and getting data per league now
+matchData.sort_index()
+#print(matchData.sort_index())
+matchData.sort_values(by='league_id',ascending=True)
+# matchData('home_team_goal').where('league_id'=13274)
+
+
+s = matchData['league_id'].value_counts(dropna=False)
+#print(s)
+s2 = matchData['country_id'].value_counts(dropna=False)
+print(s.shape)
+
+print(s2.shape)
