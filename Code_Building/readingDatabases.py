@@ -39,10 +39,10 @@ matchData = matchData.iloc[1:,:]
 extraData = extraData.iloc[1:,:]
 
 # Just checking on the shape of the data
-print(countryData.shape)
-print(leagueData.shape)
-print(matchData.shape)
-print(extraData.shape)
+# print(countryData.shape)
+# print(leagueData.shape)
+# print(matchData.shape)
+# print(extraData.shape)
 
 extraData = extraData.dropna()
 size = extraData.shape
@@ -60,36 +60,58 @@ while i < size:
 # The data has been pre-formatted in Excel to be in an order we can exploit
 # In any continuous 'x' stages of the game, if 'W' is repeating (counter), good form
 # I would like to ideally add a 'form score', that will act as a useful feature
-teamList = ['10000','8342']
-seasonList = ['2009/2010','2010/2011']
+teamList = ['10000'] # ,'8342']
+seasonList = ['2009/2010'] # ,'2010/2011']
 countryID = '1'
 
 for seasonID in seasonList:
-    winCounter = 0
-    stage = 1
     seasonMatches = matchData.loc[(matchData['season'] == seasonID) & (matchData['country_id'] == countryID)]
-    stageID = int(((seasonMatches['stage']).tail(1)).iloc[0])
     for teamID in teamList:
-        #while stage <= 40:
-            # The team is playing at home
-            homeMatches = seasonMatches.loc[(seasonMatches['home_team_api_id'] == teamID)]
-            print(homeMatches)
-            #for match in homeMatches:
-            homeWins = homeMatches.loc[homeMatches['home_team_goal'] > homeMatches['away_team_goal']]
-            #print(homeWins)
-            homeDraws = homeMatches.loc[homeMatches['home_team_goal'] == homeMatches['away_team_goal']]
-            #print(homeDraws)
-            homeLosses = homeMatches.loc[homeMatches['home_team_goal'] < homeMatches['away_team_goal']]
-            #print(homeLosses)
-            # The team is playing away from home
-            awayMatches = seasonMatches.loc[seasonMatches['away_team_api_id'] == teamID]
+        # Let us identify general form
+        genMatches = seasonMatches.loc[(seasonMatches['home_team_api_id'] == teamID)|
+                                       (seasonMatches['away_team_api_id'] == teamID)]
+        genForm = pandas.DataFrame(genMatches['stage'])
+        #print(genForm)
+        counter = 1; prevState = 0; newState = 1
+        lastValue = 0
+        stageList = genMatches['stage']
+        for stage in stageList:
+            temp = genMatches.loc[(genMatches['stage'] == stage)]
+            kkk = (temp.loc[temp['away_team_api_id'] == teamID]['away_team_api_id'] == teamID).empty
+            homeGoal = int(temp.loc[temp['stage'] == stage, 'home_team_goal'].item())
+            awayGoal = int(temp.loc[temp['stage'] == stage, 'away_team_goal'].item())
+            print(stage, homeGoal,awayGoal)
+            if kkk:    # Home Matches
+                print('Home Match')
+                if homeGoal > awayGoal:
+                    print('Home Win')
+                    # form[counter] = lastValue + 1*(newState+1)     # Home Win
+                elif homeGoal == awayGoal:
+                    print('Home Draw')
+                    # form[counter] = lastValue + 0                  # Home Draw
+                elif homeGoal < awayGoal:
+                    print('Home Loss')
+                    # form[counter] = lastValue + -1                 # Home Loss
+                    #newState = 0
+            else:   # Away Matches
+                print('Away Match')
+                if homeGoal < awayGoal:
+                    print('Win')
+                    #form[counter] = lastValue + 1*(newState+1)     # Away Win
+                elif homeGoal == awayGoal:
+                    print('Draw')
+                    #form[counter] = lastValue + 0                  # Away Draw
+                elif homeGoal > awayGoal:
+                    print('Loss')
+                    #form[counter] = lastValue + -1                 # Away Loss
+            counter += 1
+        #print(form)
+        # if homeMatches[]
+            # formCol = 1
 
-            stage = stage + 1
-        # print('In '+seasonID+' the following home stats:')
-        # print('Wins = '+ str(homeWins.shape[0]))
-        # print('Draws = ' + str(homeDraws.shape[0]))
-        # print('Losses = ' + str(homeLosses.shape[0]))
-        #if (homeMatches['home_team_goal'] > homeMatches['away_team_goal']):
-        #    winCounter = winCounter + 1
-        #print(winCounter)
+
+customDF = pandas.DataFrame(matchData['league_id'])
+#print(customDF)
+
+
 # Let us continue
