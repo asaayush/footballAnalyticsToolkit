@@ -45,23 +45,51 @@ print(matchData.shape)
 print(extraData.shape)
 
 extraData = extraData.dropna()
-for row in extraData:
-    temp = extraData.iloc[0, :]
-    
+size = extraData.shape
+size = size[0]
+goalID = []
+i=0
+while i < size:
+    temp = str(extraData.iloc[i, 0])
+    goalID_temp = re.findall('<id>([0-9]+)',temp)
+    goalID.append(goalID_temp)
+    i = i+1
 
+# Let us now build the winPredictData.csv
+# We need the following data: Form over last 'x' games. --> We need MatchData.csv
+# The data has been pre-formatted in Excel to be in an order we can exploit
+# In any continuous 'x' stages of the game, if 'W' is repeating (counter), good form
+# I would like to ideally add a 'form score', that will act as a useful feature
+teamList = ['10000','8342']
+seasonList = ['2009/2010','2010/2011']
+countryID = '1'
 
+for seasonID in seasonList:
+    winCounter = 0
+    stage = 1
+    seasonMatches = matchData.loc[(matchData['season'] == seasonID) & (matchData['country_id'] == countryID)]
+    stageID = int(((seasonMatches['stage']).tail(1)).iloc[0])
+    for teamID in teamList:
+        #while stage <= 40:
+            # The team is playing at home
+            homeMatches = seasonMatches.loc[(seasonMatches['home_team_api_id'] == teamID)]
+            print(homeMatches)
+            #for match in homeMatches:
+            homeWins = homeMatches.loc[homeMatches['home_team_goal'] > homeMatches['away_team_goal']]
+            #print(homeWins)
+            homeDraws = homeMatches.loc[homeMatches['home_team_goal'] == homeMatches['away_team_goal']]
+            #print(homeDraws)
+            homeLosses = homeMatches.loc[homeMatches['home_team_goal'] < homeMatches['away_team_goal']]
+            #print(homeLosses)
+            # The team is playing away from home
+            awayMatches = seasonMatches.loc[seasonMatches['away_team_api_id'] == teamID]
 
-
-# let us try and getting data per league now
-matchData.sort_index()
-#print(matchData.sort_index())
-matchData.sort_values(by='league_id',ascending=True)
-# matchData('home_team_goal').where('league_id'=13274)
-
-
-s = matchData['league_id'].value_counts(dropna=False)
-#print(s)
-s2 = matchData['country_id'].value_counts(dropna=False)
-print(s.shape)
-
-print(s2.shape)
+            stage = stage + 1
+        # print('In '+seasonID+' the following home stats:')
+        # print('Wins = '+ str(homeWins.shape[0]))
+        # print('Draws = ' + str(homeDraws.shape[0]))
+        # print('Losses = ' + str(homeLosses.shape[0]))
+        #if (homeMatches['home_team_goal'] > homeMatches['away_team_goal']):
+        #    winCounter = winCounter + 1
+        #print(winCounter)
+# Let us continue
