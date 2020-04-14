@@ -36,4 +36,5 @@ df.rename(columns=lambda x:x +1)	***Mass Renaming of Columns
 df.set_index('column_one')	***Change the index
 df.rename(index=lambda x:x + 1)		***Mass renaming of index
 
-
+//Appending more rows
+df.append(data,ignore_index=True,sort=False)
