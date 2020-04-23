@@ -12,6 +12,7 @@ leagueData_file = 'LeagueData.csv'
 matchData_file = 'MatchData.csv'
 extraData_file = 'MatchData4_ExtraData_NeedsCleaning.csv'
 teamData_file = 'TeamData.csv'
+fifaTeamData_file = 'Team_Attributes_Data.csv'
 
 # We could import using any of the following strategies:
 # 1. Using direct CSV readers
@@ -31,10 +32,18 @@ tags = ['goal','shoton','shotoff','foulcommit','card','cross','corner','possessi
 extraData = pandas.read_csv(extraData_file, names=tags)
 tags = ['id','team_api_id','team_fifa_api_id','team_long_name','team_short_name']
 teamData = pandas.read_csv(teamData_file, names=tags)
+tags = ['id','team_fifa_api_id','team_api_id','year','date','buildUpPlaySpeed','buildUpPlaySpeedClass',
+        'buildUpPlayDribbling','buildUpPlayDribblingClass','buildUpPlayPassing','buildUpPlayPassingClass',
+        'buildUpPlayPositioningClass','chanceCreationPassing','chanceCreationPassingClass','chanceCreationCrossing',
+        'chanceCreationCrossingClass','chanceCreationShooting','chanceCreationShootingClass',
+        'chanceCreationPositioningClass','defencePressure','defencePressureClass','defenceAggression',
+        'defenceAggressionClass','defenceTeamWidth','defenceTeamWidthClass','defenceDefenderLineClass']
+fifaTeamData = pandas.read_csv(fifaTeamData_file, names=tags)
 
 # Important point to note: As it turns out, the first line of the csv is the tags.
 # I should remove it after writing sufficient code to handle it. UPDATE: I can do this!
 
+'''
 # Cleaning the data to eliminate the tags
 countryData = countryData.iloc[1:,:]
 leagueData = leagueData.iloc[1:,:]
@@ -74,7 +83,7 @@ lastX = 3
 data = {('0', '0', '0', '0', '0')}
 formTable = pandas.DataFrame(data)
 
-'''
+
 for countryId in countryID:
     for seasonID in seasonList:
         seasonMatches = matchData.loc[(matchData['season'] == seasonID) & (matchData['country_id'] == countryId)]
@@ -132,7 +141,7 @@ for countryId in countryID:
 formTable = formTable.iloc[1:,:]
 formTable.columns = ['season', 'stage', 'team_id', 'form', 'result']
 formTable.to_csv('formTable.csv')
-'''
+
 formTable = pandas.read_csv('formTable.csv')
 print(formTable.shape)
 
@@ -177,4 +186,40 @@ winPredictData = pandas.concat([league, matchData['season'], matchData['stage'],
 
 print(winPredictData)
 winPredictData.to_csv('winPredictData.csv')
+'''
 
+# Next Step is to prepare the required data for identifying play styles
+# This is an unsupervised clustering problem (K Means)
+# From FIFA Team Data:
+# Only for the year 2015:
+# Use all features but normalise them first
+tempList = fifaTeamData.loc[fifaTeamData['year'] == '2015']
+buildUpClass = []
+
+teamList = tempList['team_api_id']
+buildUpPlaySpeed = tempList['buildUpPlaySpeed']
+buildUpPlayDribbling = tempList['buildUpPlaySpeed']
+buildUpPlayPassing = tempList['buildUpPlayPassing']
+buildUpPlayClass = tempList['buildUpPlayPositioningClass']
+
+
+'''for team in tempList['team_api_id']:
+    row = tempList.loc[tempList['team_api_id'] == team]
+    a = row['buildUpPlaySpeed']
+    buildUpPlaySpeed = pandas.concat([buildUpPlaySpeed,a])
+    a = row['buildUpPlayDribbling']
+    buildUpPlayDribbling = pandas.concat([buildUpPlayDribbling, a])
+    a = row['buildUpPlayPassing']
+    buildUpPlayPassing = pandas.concat([buildUpPlayPassing, a])
+    a = row['buildUpPlayPositioningClass']
+    buildUpPlayClass = pandas.concat([buildUpPlayClass, a])'''
+
+data={}
+fifaTeamTable = pandas.DataFrame(data)
+# print(fifaTeamTable)
+# print(buildUpPlaySpeed.shape,buildUpPlayDribbling.shape,buildUpPlayPassing.shape,buildUpPlayClass.shape)
+fifaTeamTable = pandas.concat([fifaTeamTable,teamList,buildUpPlaySpeed,buildUpPlayDribbling,
+                               buildUpPlayPassing,buildUpPlayClass],axis=1)
+fifaTeamTable = fifaTeamTable.iloc[1:,:]
+fifaTeamTable = fifaTeamTable.drop_duplicates()
+print(fifaTeamTable)
