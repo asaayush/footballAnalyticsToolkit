@@ -198,28 +198,38 @@ buildUpClass = []
 
 teamList = tempList['team_api_id']
 buildUpPlaySpeed = tempList['buildUpPlaySpeed']
-buildUpPlayDribbling = tempList['buildUpPlaySpeed']
+buildUpPlayDribbling = tempList['buildUpPlayDribbling']
 buildUpPlayPassing = tempList['buildUpPlayPassing']
 buildUpPlayClass = tempList['buildUpPlayPositioningClass']
-
-
-'''for team in tempList['team_api_id']:
-    row = tempList.loc[tempList['team_api_id'] == team]
-    a = row['buildUpPlaySpeed']
-    buildUpPlaySpeed = pandas.concat([buildUpPlaySpeed,a])
-    a = row['buildUpPlayDribbling']
-    buildUpPlayDribbling = pandas.concat([buildUpPlayDribbling, a])
-    a = row['buildUpPlayPassing']
-    buildUpPlayPassing = pandas.concat([buildUpPlayPassing, a])
-    a = row['buildUpPlayPositioningClass']
-    buildUpPlayClass = pandas.concat([buildUpPlayClass, a])'''
+chanceCreationPassing = tempList['chanceCreationPassing']
+chanceCreationCrossing = tempList['chanceCreationCrossing']
+chanceCreationShooting = tempList['chanceCreationShooting']
+chanceCreationClass = tempList['chanceCreationPositioningClass']
+defencePressure = tempList['defencePressure']
+defenceAggression = tempList['defenceAggression']
+defenceTeamWidth = tempList['defenceTeamWidth']
+defenceClass = tempList['defenceDefenderLineClass']
 
 data={}
 fifaTeamTable = pandas.DataFrame(data)
 # print(fifaTeamTable)
 # print(buildUpPlaySpeed.shape,buildUpPlayDribbling.shape,buildUpPlayPassing.shape,buildUpPlayClass.shape)
 fifaTeamTable = pandas.concat([fifaTeamTable,teamList,buildUpPlaySpeed,buildUpPlayDribbling,
-                               buildUpPlayPassing,buildUpPlayClass],axis=1)
+                               buildUpPlayPassing,buildUpPlayClass,chanceCreationPassing,chanceCreationCrossing,
+                               chanceCreationShooting,chanceCreationClass,defencePressure,defenceAggression,
+                               defenceTeamWidth,defenceClass],axis=1)
 fifaTeamTable = fifaTeamTable.iloc[1:,:]
 fifaTeamTable = fifaTeamTable.drop_duplicates()
+
+dataReplace1 = {'Organised': 1 ,'Free Form': 0}
+dataReplace2 = {'Cover': 1, 'Offside Trap': 0}
+
+fifaTeamTable.buildUpPlayPositioningClass = [dataReplace1[item] for item in fifaTeamTable.buildUpPlayPositioningClass]
+fifaTeamTable.chanceCreationPositioningClass = [dataReplace1[item] for item in
+                                                fifaTeamTable.chanceCreationPositioningClass]
+fifaTeamTable.defenceDefenderLineClass = [dataReplace2[item] for item in fifaTeamTable.defenceDefenderLineClass]
+
+
 print(fifaTeamTable)
+
+fifaTeamTable.to_csv('fifaTeamTable.csv')

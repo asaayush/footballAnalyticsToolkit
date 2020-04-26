@@ -38,6 +38,7 @@ L_yaxis = temp['6']            # Y Axis will represent away form
 winPredictKNNModel = KNeighborsClassifier(n_neighbors=25)
 # Split Data into Training and Testing
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3)
+print(y_train)
 winPredictKNNModel.fit(X_train,y_train)             # Training the model
 y_predict = winPredictKNNModel.predict(X_test)      # Predicting W/L/D
 # Checking accuracy
